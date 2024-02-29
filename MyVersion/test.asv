@@ -1,0 +1,11 @@
+clear all;  
+clear global all;
+addpath('data','funs'); %lets matlab see these folders
+
+global g_param_temp
+g_param_temp(4) = 1
+g_param_temp(2) = 1
+g_param_temp(1) = 1
+g_param_temp(3) = 1
+
+model_onco_mono_discrete_solver([0, 10], 1, 3)
