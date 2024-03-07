@@ -8,15 +8,15 @@
 %
 function c = fun_c_PKpo_1Komp(t)
 
-g_actual_curve = 1;
+global g_actual_curve;
 global gcell_dosing;
 
 % Get parameters and dosing intervall
-dose = 100;
-ka   = 103.9673;
-k    = 0.1052;
-V    = 2.788;
-con  = 100;
+dose = gcell_dosing{2,1,g_actual_curve}(1);
+ka   = gcell_dosing{2,1,g_actual_curve}(2);
+k    = gcell_dosing{2,1,g_actual_curve}(3);
+V    = gcell_dosing{2,1,g_actual_curve}(4);
+con  = gcell_dosing{3,1,g_actual_curve};
 
 
 t = t*24;              % Change time unit in hours

@@ -10,6 +10,8 @@ global g_n_curve g_anz_data_all gv_anz_data;
 global g_actual_curve;
 global g_model;
 global gs_LargeScale;
+global timescale;
+timescale = 1;
 
 addpath('data','funs'); %lets matlab see these folders
 
@@ -24,10 +26,10 @@ addpath('data','funs'); %lets matlab see these folders
 %struct_data = fun_data_control_A549();
 
 %struct_data = fun_data_control_1();
-struct_data = fun_data_control_2();
+%struct_data = fun_data_control_2();
 
 %struct_data = fun_data_mono_drug_A1_180();
-%struct_data = fun_data_mono_drug_A2_120();
+struct_data = fun_data_mono_drug_A2_120();
 %struct_data = fun_data_mono_drug_B_100();
 %struct_data = fun_data_mono_drug_C_100();
 %struct_data = fun_data_mono_drug_C_150();
@@ -62,8 +64,6 @@ for i=1:g_n_curve
     end
     g_anz_data_all = g_anz_data_all + gv_anz_data(i);
 end
-
-%I've skipped including options for the solver
 
 % Lower and upper bounds for parameter estimation 
 lb = []; 
@@ -112,7 +112,6 @@ tic; %idrk what this does, probably something with the time tracking
 
 time = toc;
 
-%idk what this does
 if strcmp (gs_wr_2_disc,'on')
     fclose(g_fid);
 end
@@ -139,7 +138,7 @@ for k=1:g_n_curve
     if (g_model == 0 || g_model == 1)
         %struct_sol(k) = ode45(@model_onco_mono, [0,t_end+1], ... 
         %                x0,options);
-        solutions = model_onco_mono_discrete_solver(0, t_end + 1, 1, x0, g_param_temp);
+        solutions = model_onco_mono_discrete_solver(0, t_end + 1, timescale, x0, g_param_temp);
         w_t = sum(solutions', 1)';
         t_values = linspace(0, t_end, length(w_t));
         struct_sol(k) = struct('x', t_values, 'y', w_t);

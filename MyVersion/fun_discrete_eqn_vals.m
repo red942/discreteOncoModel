@@ -14,6 +14,7 @@ global g_actual_curve
 global g_n_curve;
 global g_model;
 global gv_SofS_CT;
+global timescale;
 
 g_param_temp = param;
 
@@ -34,7 +35,7 @@ for k = 1:g_n_curve
 
     % Call the discrete solver
     %assumes x0 = w0 from the paper
-    soltn_vals = model_onco_mono_discrete_solver(t_data(1), t_data(end), 1, x0, param);
+    soltn_vals = model_onco_mono_discrete_solver(t_data(1), t_data(end), timescale, x0, param);
 
     % Evaluate function values
     for i = 1:gv_anz_data(k)
