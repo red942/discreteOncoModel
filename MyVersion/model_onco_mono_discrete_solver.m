@@ -3,7 +3,7 @@
 %
 % Difference equations for onco model monotherapy and the variational equations
 %
-function soltn_vals = model_onco_mono_discrete_solver(time_range, h, w_0, parameters)
+function soltn_vals = model_onco_mono_discrete_solver(time_start, time_end, h, w_0, parameters)
 
 l0 = parameters(1);
 l1 = parameters(2);
@@ -22,7 +22,7 @@ k2 = parameters(4);
 fun_c = @(t) 0;
 
 % Time vector
-t = linspace(time_range(1), time_range(2), (time_range(2)-time_range(1))/h + 1);
+t = linspace(time_start, time_end, (time_end-time_start)/h + 1);
 
 % Initialize vectors to store results
 x1 = zeros(size(t));
