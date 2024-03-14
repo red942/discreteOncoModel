@@ -4,6 +4,7 @@
 % Difference equations for onco model combination therapy
 % (k2a and k2b are fixed) and the variational equations
 %
+%NOT YET IMPLEMENTD
 function dxx = model_onco_comb_discrete(t,x)
 
 global g_param_temp;

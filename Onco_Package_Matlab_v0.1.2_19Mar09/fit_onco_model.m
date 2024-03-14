@@ -29,11 +29,11 @@ addpath('data','funs'); %lets matlab see these folders
 %struct_data = fun_data_control_MDA();
 %struct_data = fun_data_control_A549();
 
-struct_data = fun_data_control_1();
+%struct_data = fun_data_control_1();
 %struct_data = fun_data_control_2();
 
 %struct_data = fun_data_mono_drug_A1_180();
-%struct_data = fun_data_mono_drug_A2_120();
+struct_data = fun_data_mono_drug_A2_120();
 %struct_data = fun_data_mono_drug_B_100();
 %struct_data = fun_data_mono_drug_C_100();
 %struct_data = fun_data_mono_drug_C_150();
@@ -75,7 +75,7 @@ end
 disp(g_n_curve)
 % Solver options
 options = odeset('RelTol',1e-10,'AbsTol',1e-10);
-lsq_jac = 'on';                     % Jacobian from user or not
+lsq_jac = 'off';                     % Jacobian from user or not
 lsq_ops = [1e-8, 1e-8, 1e5, 1e5];   % TolFun, TolX, MaxIter,MaxFunEvals
 options_lsq = optimset('Jacobian',lsq_jac,'TolFun',lsq_ops(1),...
                        'TolX',lsq_ops(2),'MaxIter',lsq_ops(3),...
@@ -135,7 +135,7 @@ disp(text);
 text = sprintf('lsqcurvefit settings: Jacobi: %s, TolFun: %e, TolX: %e, MaxIter: %e, MaxFunEval: %e', ...
                lsq_jac,lsq_ops(1),lsq_ops(2),lsq_ops(3),lsq_ops(4));
 disp(text);
-
+disp(g_param_temp)
 
 % Compute solutions of different objects and store them in a struct      
 for k=1:g_n_curve

@@ -29,8 +29,8 @@ addpath('data','funs'); %lets matlab see these folders
 %struct_data = fun_data_control_2();
 
 %struct_data = fun_data_mono_drug_A1_180();
-struct_data = fun_data_mono_drug_A2_120();
-%struct_data = fun_data_mono_drug_B_100();
+%struct_data = fun_data_mono_drug_A2_120();
+struct_data = fun_data_mono_drug_B_100();
 %struct_data = fun_data_mono_drug_C_100();
 %struct_data = fun_data_mono_drug_C_150();
 %struct_data = fun_data_mono_drug_C_100_150();
@@ -43,7 +43,8 @@ struct_data = fun_data_mono_drug_A2_120();
 
 
 % Plot the object data
-figure(1); plot(struct_data(1).t_data,struct_data(1).y_data,'red x'); hold on;for i=2:g_n_curve
+figure(1); plot(struct_data(1).t_data,struct_data(1).y_data,'red x'); hold on;
+for i=2:g_n_curve
     figure(1); plot(struct_data(i).t_data,struct_data(i).y_data,'black s'); hold on;
 end
 xlabel('t (days)'); ylabel('w(t) (cm^3)');
@@ -65,13 +66,11 @@ for i=1:g_n_curve
     g_anz_data_all = g_anz_data_all + gv_anz_data(i);
 end
 
-% Lower and upper bounds for parameter estimation 
-lb = []; 
-ub = [];  
 
-%I'm not really sure what this stuff does yet
 
-%checks if some display variable is set to on or off
+
+
+%Displays certain things based on if variables are set to on or off
 
 %case off
 if strcmp(gs_wr_2_disp,'off')
@@ -101,14 +100,47 @@ if strcmp (gs_wr_2_disc,'on')
     cd ..;
 end
 
-%does the fitting of parameters
+%Sets the options ofr parameter fitting
 
-tic; %idrk what this does, probably something with the time tracking
+lsq_ops = [1e-10, 1e-10, 1e7, 1e7];   % TolFun, TolX, MaxIter,MaxFunEvals
+options_lsq = optimset('TolFun',lsq_ops(1),...
+                       'TolX',lsq_ops(2),'MaxIter',lsq_ops(3),...
+                       'MaxFunEvals',lsq_ops(4),...
+                       'LargeScale',gs_LargeScale);
+
+% Lower and upper bounds for parameter estimation 
+lb = [0, 0, 0, 0, 0]; 
+ub = [2, 2, 2, 2, 2];  
+
+%[erg,resnorm,residual,exitflag,output]  = ... 
+%    lsqcurvefit(@fun_discrete_eqn_vals,gv_start_vals,...
+%                g_t_data,g_y_data,lb,ub,options_lsq);
+
+% Define the objective function
+objective_function = @fun_discrete_eqn_vals;
+
+% Define optimization options
+options = optimoptions('lsqcurvefit', 'MaxIterations', 1000, 'MaxFunctionEvaluations', 2000);
+
+% Define custom optimization stopping criteria
+threshold = 0.05; % 5% threshold
 
 
-[erg,resnorm,residual,exitflag,output]  = ... 
-    lsqcurvefit(@fun_discrete_eqn_vals,gv_start_vals,...
-                g_t_data,g_y_data,lb,ub);
+% Perform optimization
+optimized_params = lsqcurvefit(objective_function, gv_start_vals, g_t_data, g_y_data, lb, ub, options);
+
+% Calculate the fitted values using the optimized parameters
+fitted_values = fun_discrete_eqn_vals(optimized_params, g_t_data);
+
+% An atttempt at rerunning to get it to not stop until it works
+%tolerance = threshold * ones(size(g_y_data)); % Tolerance for each data point
+%while any(abs(fitted_values - g_y_data) > tolerance)
+%    % If any fitted value is not within the tolerance, re-optimize
+%    optimized_params = lsqcurvefit(objective_function, optimized_params, g_t_data, g_y_data, lb, ub, options);%
+%    fitted_values = fun_discrete_eqn_vals(optimized_params, g_t_data);
+%end
+
+erg = optimized_params;
 
 time = toc;
 
@@ -119,12 +151,7 @@ end
 % Write resulting solver properties 
 text = sprintf('\nCalculation time: %8.0f (secs)',time);
 disp(text);
-text = sprintf('\nlsqcurvefit results: Iterations: %8.0f, FuncCount: %8.0f, Algortihm: %s',...
-output.iterations,output.funcCount,output.algorithm);
-disp(text);
-%text = sprintf('lsqcurvefit settings: Jacobi: %s, TolFun: %e, TolX: %e, MaxIter: %e, MaxFunEval: %e', ...
-%               lsq_jac,lsq_ops(1),lsq_ops(2),lsq_ops(3),lsq_ops(4));
-%disp(text);
+disp(g_param_temp)
 
 
 % Compute solutions of different objects and store them in a struct      
@@ -136,8 +163,7 @@ for k=1:g_n_curve
     %x0(1) = erg(5); x0(21) = 1;
     x0 = erg(5);
     if (g_model == 0 || g_model == 1)
-        %struct_sol(k) = ode45(@model_onco_mono, [0,t_end+1], ... 
-        %                x0,options);
+        %struct_sol(k) = ode45(@model_onco_mono, [0,t_end+1], ...    z1 
         solutions = model_onco_mono_discrete_solver(0, t_end + 1, timescale, x0, g_param_temp);
         w_t = sum(solutions', 1)';
         t_values = linspace(0, t_end, length(w_t));
@@ -156,8 +182,8 @@ end
 
 
 % Calculate statistics
-stat = fun_stats(erg,struct_sol,struct_data);
+%stat = fun_stats(erg,struct_sol,struct_data);
 
 
 % Plot fitting results
-void = fun_print_result(erg,g_model,stat);
+%void = fun_print_result(erg,g_model,stat);

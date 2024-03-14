@@ -43,6 +43,7 @@ gs_excel = 'on';                  % Write results as Excel File
 %                                   Monotherapy:   (l0,l1,k1,k2, w0)
 %                                   Comb. therapy: (l0,l1,k1,psi,w0)
 gv_start_vals = [0.1871, 0.2426, 1, 0.01, 0.0124];
+%gv_start_vals = [0.1, 0.1, 1, 0.01, 0.1];
       
 
 % Fitting data
