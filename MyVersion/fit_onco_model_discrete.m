@@ -100,19 +100,11 @@ if strcmp (gs_wr_2_disc,'on')
     cd ..;
 end
 
-%Sets the options ofr parameter fitting
-
-lsq_ops = [1e-10, 1e-10, 1e7, 1e7];   % TolFun, TolX, MaxIter,MaxFunEvals
-options_lsq = optimset('TolFun',lsq_ops(1),...
-                       'TolX',lsq_ops(2),'MaxIter',lsq_ops(3),...
-                       'MaxFunEvals',lsq_ops(4),...
-                       'LargeScale',gs_LargeScale);
-
 % Lower and upper bounds for parameter estimation 
 lb = [0, 0, 0, 0, 0]; 
 ub = [2, 2, 2, 2, 2];  
 
-%[erg,resnorm,residual,exitflag,output]  = ... 
+%[optimized_params,resnorm,residual,exitflag,output]  = ... 
 %    lsqcurvefit(@fun_discrete_eqn_vals,gv_start_vals,...
 %                g_t_data,g_y_data,lb,ub,options_lsq);
 
@@ -120,27 +112,28 @@ ub = [2, 2, 2, 2, 2];
 objective_function = @fun_discrete_eqn_vals;
 
 % Define optimization options
-options = optimoptions('lsqcurvefit', 'MaxIterations', 1000, 'MaxFunctionEvaluations', 2000);
-
-% Define custom optimization stopping criteria
-threshold = 0.05; % 5% threshold
-
+lsq_ops = [1e-10, 1e-10, 1e7, 1e7];   % TolFun, TolX, MaxIter,MaxFunEvals
+options_lsq = optimset('TolFun',lsq_ops(1),...
+                       'TolX',lsq_ops(2),'MaxIter',lsq_ops(3),...
+                       'MaxFunEvals',lsq_ops(4),...
+                       'LargeScale',gs_LargeScale);
+tic;
 
 % Perform optimization
-optimized_params = lsqcurvefit(objective_function, gv_start_vals, g_t_data, g_y_data, lb, ub, options);
+optimized_params = lsqcurvefit(objective_function, gv_start_vals, g_t_data, g_y_data, lb, ub, options_lsq);
 
 % Calculate the fitted values using the optimized parameters
 fitted_values = fun_discrete_eqn_vals(optimized_params, g_t_data);
 
 % An atttempt at rerunning to get it to not stop until it works
+% Define custom optimization stopping criteria
+%threshold = 0.05; % 5% threshold
 %tolerance = threshold * ones(size(g_y_data)); % Tolerance for each data point
 %while any(abs(fitted_values - g_y_data) > tolerance)
 %    % If any fitted value is not within the tolerance, re-optimize
 %    optimized_params = lsqcurvefit(objective_function, optimized_params, g_t_data, g_y_data, lb, ub, options);%
 %    fitted_values = fun_discrete_eqn_vals(optimized_params, g_t_data);
 %end
-
-erg = optimized_params;
 
 time = toc;
 
@@ -156,12 +149,12 @@ disp(g_param_temp)
 
 % Compute solutions of different objects and store them in a struct      
 for k=1:g_n_curve
-    g_param_temp = [erg(1), erg(2), erg(3), erg(4)];    
+    g_param_temp = [optimized_params(1), optimized_params(2), optimized_params(3), optimized_params(4)];    
     t_end = struct_data(k).t_data(length(struct_data(k).t_data));
     g_actual_curve = k;
     %x0 = zeros(24,1);
-    %x0(1) = erg(5); x0(21) = 1;
-    x0 = erg(5);
+    %x0(1) = optimized_params(5); x0(21) = 1;
+    x0 = optimized_params(5);
     if (g_model == 0 || g_model == 1)
         %struct_sol(k) = ode45(@model_onco_mono, [0,t_end+1], ...    z1 
         solutions = model_onco_mono_discrete_solver(0, t_end + 1, timescale, x0, g_param_temp);
@@ -182,8 +175,8 @@ end
 
 
 % Calculate statistics
-%stat = fun_stats(erg,struct_sol,struct_data);
+%stat = fun_stats(optimized_params,struct_sol,struct_data);
 
 
 % Plot fitting results
-%void = fun_print_result(erg,g_model,stat);
+%void = fun_print_result(optimized_params,g_model,stat);
