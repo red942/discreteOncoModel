@@ -24,7 +24,7 @@ switch gcell_dosing{1,1,g_actual_curve}
 end
 
 % Time vector (input vals)
-t = linspace(time_start, time_end, (time_end-time_start)/h + 1);
+t = linspace(time_start, time_end, floor((time_end-time_start)/h) + 1);
 
 % Initialize vectors to store results
 x1 = zeros(size(t));

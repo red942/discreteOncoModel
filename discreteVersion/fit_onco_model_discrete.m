@@ -11,7 +11,7 @@ global g_actual_curve;
 global g_model;
 global gs_LargeScale;
 global timescale;
-timescale = 1;
+timescale = 0.5;
 
 addpath('data','funs'); %lets matlab see these folders
 
@@ -101,8 +101,8 @@ if strcmp (gs_wr_2_disc,'on')
 end
 
 % Lower and upper bounds for parameter estimation 
-lb = [0, 0, 0, 0, 0]; 
-ub = [2, 2, 2, 2, 2];  
+lb = []; 
+ub = [];  
 
 %[optimized_params,resnorm,residual,exitflag,output]  = ... 
 %    lsqcurvefit(@fun_discrete_eqn_vals,gv_start_vals,...
@@ -127,11 +127,13 @@ fitted_values = fun_discrete_eqn_vals(optimized_params, g_t_data);
 
 % An atttempt at rerunning to get it to not stop until it works
 % Define custom optimization stopping criteria
+
 %threshold = 0.05; % 5% threshold
 %tolerance = threshold * ones(size(g_y_data)); % Tolerance for each data point
 %while any(abs(fitted_values - g_y_data) > tolerance)
 %    % If any fitted value is not within the tolerance, re-optimize
-%    optimized_params = lsqcurvefit(objective_function, optimized_params, g_t_data, g_y_data, lb, ub, options);%
+%    optimized_params = [rand()*20, rand()*20, rand()*20, rand()*20, rand()*20];
+%    optimized_params = lsqcurvefit(objective_function, optimized_params, g_t_data, g_y_data, lb, ub, options_lsq);%
 %    fitted_values = fun_discrete_eqn_vals(optimized_params, g_t_data);
 %end
 
