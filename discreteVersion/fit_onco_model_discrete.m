@@ -30,17 +30,18 @@ addpath('data','funs'); %lets matlab see these folders
 
 %struct_data = fun_data_mono_drug_A1_180();
 %struct_data = fun_data_mono_drug_A2_120();
-struct_data = fun_data_mono_drug_B_100();
+%struct_data = fun_data_mono_drug_B_100();
 %struct_data = fun_data_mono_drug_C_100();
 %struct_data = fun_data_mono_drug_C_150();
 %struct_data = fun_data_mono_drug_C_100_150();
 
+
+%NOT YET IMPLEMENTED
 %struct_data = fun_data_comb_drug_A1_180_and_C_100();
 %struct_data = fun_data_comb_drug_A2_120_and_C_100();
 %struct_data = fun_data_comb_drug_B_100_and_C_150();
 %
 %=================================
-
 
 % Plot the object data
 figure(1); plot(struct_data(1).t_data,struct_data(1).y_data,'red x'); hold on;
@@ -175,6 +176,9 @@ for k=1:g_n_curve
     plot(t_values, w_t, 'black'); hold on;
 end
 
+
+
+%NOT YET IMPLEMENTED, WILL MAKE LATER
 
 % Calculate statistics
 %stat = fun_stats(optimized_params,struct_sol,struct_data);

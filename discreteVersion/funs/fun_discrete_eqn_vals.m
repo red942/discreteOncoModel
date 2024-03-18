@@ -38,6 +38,7 @@ for k = 1:g_n_curve
 
     % Call the discrete solver
     %assumes x0 = w0 from the paper
+    disp("end point is " + t_data(end))
     soltn_vals = model_onco_mono_discrete_solver(t_data(1), t_data(end), timescale, x0, param);
 
     % Evaluate function values
