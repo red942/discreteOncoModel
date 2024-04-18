@@ -1,0 +1,121 @@
+function [concentration] = concentrationVals(data, t0, drugNum)
+%CONCENTRATIONVALS returns the values of the conentration function c(t) at a point t = t0
+    %NOTE: t0 is given in days. drugNum is the number of the drug as in
+    %first or second drug in combination
+
+    %No matter what, we start the concentration at 0 and add to it
+    concentration = 0;
+    if (data.type == 1) %control
+        return
+    end
+    
+    t0 = t0*24; %Converts t0 from days to hours
+
+    if (drugNum == 1)
+        %Counts the number of doses of the first drug
+        numDoses = 0;
+        for time = data.dosingTime1
+            if (time > t0)
+                break
+            end
+            numDoses = numDoses + 1;
+        end
+
+        %When we have no doses, concentration is 0
+        if (numDoses == 0)
+            concentration = 0;
+            return
+        end
+
+        %Since we do i+1, makes sure we leave room for the last one
+        if (numDoses == size(data.dosingTime1, 2))
+            numDoses = numDoses - 1;
+        end
+
+        %values are dose, ka, k, V
+        if (data.pkType1 == 1)
+            dose = data.pkParameters1(1);
+            ka = data.pkParameters1(2);
+            k = data.pkParameters1(3);
+            v = data.pkParameters1(4);
+
+            % Superposition Principle: Summing up the concentration
+            for i=1:numDoses          
+                td = t0 - data.dosingTime1(i + 1);
+                coef = ((ka*dose)/((ka-k)*v))*(exp(-k*td) - exp(-ka*td));
+                concentration = concentration + coef;
+            end
+            return
+
+        %valus are Aoral, Boral, alpha, beta, ka
+        elseif(data.pkType1 == 2)
+            aoral = data.pkParameters1(1);
+            boral = data.pkParameters1(2);
+            alpha = data.pkParameters1(3);
+            beta = data.pkParameters1(4);
+            ka = data.pkParameters1(5);
+
+            % Superposition Principle: Summing up the concentration                  
+            for i=1:numDoses           
+                td = t0 -data.dosingTime1(i + 1);
+                coef = aoral*exp(-alpha*td) + boral*exp(-beta*td) ... 
+                      -(aoral + boral)*exp(-ka*td);    
+                concentration = concentration + coef;
+            end
+        end
+
+    elseif(drugNum == 2)
+        %Counts the number of doses of the second drug
+        numDoses = 0;
+        for time = data.dosingTime2
+            if (time > t0)
+                break
+            end
+            numDoses = numDoses + 1;
+        end
+    
+        %When we have no doses, concentration is 0
+        if (numDoses == 0)
+            concentration = 0;
+            return
+        end
+
+        %Since we do i+1, makes sure we leave room for the last one
+        if (numDoses == size(data.dosingTime1, 2))
+            numDoses = numDoses - 1;
+        end
+
+        %values are dose, ka, k, V
+        if (data.pkType2 == 1)
+            dose = data.pkParameters2(1);
+            ka = data.pkParameters2(2);
+            k = data.pkParameters2(3);
+            v = data.pkParameters2(4);
+
+            % Superposition Principle: Summing up the concentration
+            for i=1:numDoses          
+                td = t0 - data.dosingTime2(i + 1);
+                coef = ((ka*dose)/((ka-k)*v))*(exp(-k*td) - exp(-ka*td));
+                concentration = concentration + coef;
+            end
+            return
+
+        %valus are Aoral, Boral, alpha, beta, ka
+        elseif(data.pkType2 == 2)
+            aoral = data.pkParamters2(1);
+            boral = data.pkParamters2(2);
+            alpha = data.pkParamters2(3);
+            beta = data.pkParamters2(4);
+            ka = data.pkParamters2(5);
+
+            % Superposition Principle: Summing up the concentration                  
+            for i=1:numDoses           
+                td = t0 -data.dosingTime2(i + 1);
+                coef = aoral*exp(-alpha*td) + boral*exp(-beta*td) ... 
+                      -(aoral + boral)*exp(-ka*td);    
+                concentration = concentration + coef;
+            end
+        end
+    end
+end
+
